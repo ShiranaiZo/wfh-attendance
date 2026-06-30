@@ -11,8 +11,6 @@ export async function ensureDatabaseExists() {
     const password = process.env.DB_PASSWORD || '';
     const dbName = process.env.DB_DATABASE || '';
 
-    console.log("ini db name : ", dbName)
-
     let connection;
 
     try {

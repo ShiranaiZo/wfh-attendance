@@ -1,0 +1,63 @@
+{
+    "info": {
+        "_postman_id": "c1f17df9-7b3b-41ef-ba38-16c8f61eb282",
+        "name": "wfh-attendance",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Gateway",
+            "item": [
+                {
+                    "name": "auth",
+                    "item": [
+                        {
+                            "name": "Login",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"hr@gmail.com\",\n    \"password\": \"hr123\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/auth/login",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "login"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "gateway_url",
+            "value": "http://localhost:3001",
+            "type": "string"
+        },
+        {
+            "key": "user_service_url",
+            "value": "http://localhost:3002",
+            "type": "string"
+        }
+    ]
+}

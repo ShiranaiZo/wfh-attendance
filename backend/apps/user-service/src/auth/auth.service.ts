@@ -29,16 +29,10 @@ export class AuthService {
             return { success: false, message: 'Invalid credentials' };
         }
 
-        const payload = { email: user.email, sub: user.id, role: user.role };
+        const payload = { id: user.id, email: user.email, role: user.role };
         return {
             success: true,
             access_token: this.jwtService.sign(payload),
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                role: user.role,
-            },
         };
     }
 
@@ -47,7 +41,7 @@ export class AuthService {
             const decoded = this.jwtService.verify(token);
 
             const user = await this.userRepository.findOne({
-                where: { id: decoded.sub },
+                where: { id: decoded.id },
                 select: { id: true, email: true, name: true, role: true },
             });
 
