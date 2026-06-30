@@ -1,6 +1,7 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, HttpStatus, Inject, Post, UnauthorizedException } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { LoginDto } from '@app/contracts/auth/dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -8,13 +9,13 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
-    async login(@Body() body: any) {
+    async login(@Body() body: LoginDto) {
         const res = await lastValueFrom(
             this.userServiceClient.send({ cmd: 'auth.login' }, body)
         );
 
         if (!res || !res.success) {
-            throw new UnauthorizedException(res?.message || 'Invalid credentials');
+            throw new HttpException(res, HttpStatus.UNAUTHORIZED);
         }
 
         return res;

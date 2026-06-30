@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { errorResponse } from '@app/contracts/helpers/response.helper';
+
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -15,6 +17,20 @@ async function bootstrap() {
         new ValidationPipe({
             whitelist: true,
             transform: true,
+            exceptionFactory: (validationErrors = []) => {
+                const errors: Record<string, string[]> = {};
+                validationErrors.forEach((error) => {
+                    errors[error.property] = Object.values(error.constraints || {});
+                });
+
+                const formattedError = errorResponse(
+                    'Validation Error',
+                    'Validation failed',
+                    errors,
+                );
+
+                return new BadRequestException(formattedError);
+            },
         }),
     );
 
