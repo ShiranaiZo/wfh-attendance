@@ -1,16 +1,6 @@
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
-
-export enum UserRole {
-    HRD = 'HRD',
-    EMPLOYEE = 'EMPLOYEE',
-}
-
-export enum Positions {
-    FRONTEND_DEVELOPER = 'Frontend Developer',
-    BACKEND_DEVELOPER = 'Backend Developer',
-    FULLSTACK_DEVELOPER = 'Full Stack Developer',
-    QA_ENGINEER = 'QA Engineer',
-}
+import { UserRoles } from '@app/contracts/helpers/user-roles.helper';
+import { Positions } from '@app/contracts/helpers/positions.helper';
 
 @Entity('users')
 export class User {
@@ -20,7 +10,7 @@ export class User {
     @Column({ unique: true })
     email!: string;
 
-    @Column()
+    @Column({ select: false })
     password!: string;
 
     @Column()
@@ -28,10 +18,10 @@ export class User {
 
     @Column({
         type: 'enum',
-        enum: UserRole,
-        default: UserRole.EMPLOYEE,
+        enum: UserRoles,
+        default: UserRoles.EMPLOYEE,
     })
-    role!: UserRole;
+    role!: UserRoles;
 
     @Column({
         type: 'enum',

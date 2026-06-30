@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpException, HttpStatus, Inject, Post, Un
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { LoginDto } from '@app/contracts/auth/dto/login.dto';
+import { AUTH_PATTERNS } from '@app/contracts/auth/auth.patterns';
 
 @Controller('auth')
 export class AuthController {
@@ -11,11 +12,11 @@ export class AuthController {
     @Post('login')
     async login(@Body() body: LoginDto) {
         const res = await lastValueFrom(
-            this.userServiceClient.send({ cmd: 'auth.login' }, body)
+            this.userServiceClient.send({ cmd: AUTH_PATTERNS.LOGIN }, body)
         );
 
         if (!res || !res.success) {
-            throw new HttpException(res, HttpStatus.UNAUTHORIZED);
+            throw new HttpException(res, res.statusCode);
         }
 
         return res;

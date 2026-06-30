@@ -2,17 +2,22 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Positions, User, UserRole } from '../entities/user.entity';
+import { User } from '../entities/user.entity';
+import { Positions } from '@app/contracts/helpers/positions.helper';
+import { UserRoles } from '@app/contracts/helpers/user-roles.helper';
 import { plainToInstance } from 'class-transformer';
-import { CreateEmployeeDto, UpdateEmployeeDto } from './dto/employee.dto';
+import { CreateEmployeeDto } from '@app/contracts/employees/dto/create-employee.dto';
+import { UpdateEmployeeDto } from '@app/contracts/employees/dto/update-employee.dto';
 import { validate } from 'class-validator';
-import { ApiResponse, successResponse, errorResponse } from '../../../../libs/contracts/src/helpers/response.helper';
+import { AuthService } from '../auth/auth.service';
+import { ApiResponse, successResponse, errorResponse } from '@app/contracts/helpers/response.helper';
 
 @Injectable()
 export class EmployeesService implements OnModuleInit {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        private readonly authService: AuthService,
     ) { }
 
     async onModuleInit() {
@@ -28,14 +33,14 @@ export class EmployeesService implements OnModuleInit {
                 admin.email = 'hr@gmail.com';
                 admin.password = adminPass;
                 admin.name = 'Budi Setiabudi';
-                admin.role = UserRole.HRD;
+                admin.role = UserRoles.HRD;
 
                 const emp1 = new User();
                 emp1.id = "550e8400-e29b-41d4-a716-446655440001";
                 emp1.email = 'employee1@gmail.com';
                 emp1.password = empPass;
                 emp1.name = 'Wawan Setiawan';
-                emp1.role = UserRole.EMPLOYEE;
+                emp1.role = UserRoles.EMPLOYEE;
                 emp1.position = Positions.FRONTEND_DEVELOPER;
 
                 const emp2 = new User();
@@ -43,7 +48,7 @@ export class EmployeesService implements OnModuleInit {
                 emp2.email = 'employee2@gmail.com';
                 emp2.password = empPass;
                 emp2.name = 'Budi Santoso';
-                emp2.role = UserRole.EMPLOYEE;
+                emp2.role = UserRoles.EMPLOYEE;
                 emp2.position = Positions.BACKEND_DEVELOPER;
 
                 await this.userRepository.save([admin, emp1, emp2]);
@@ -53,27 +58,27 @@ export class EmployeesService implements OnModuleInit {
         }
     }
 
-    async findAll(): Promise<ApiResponse<User[]>> {
+    async findAll(): Promise<ApiResponse<{ employees: User[] }>> {
         const employees = await this.userRepository.find({
-            where: { role: UserRole.EMPLOYEE },
-            order: { id: 'DESC' },
+            where: { role: UserRoles.EMPLOYEE },
+            order: { createdAt: 'DESC' },
         });
-        return successResponse('Employees', 'Successfully retrieved all employees', employees);
+        return successResponse('Employees', 'Successfully retrieved all employees', { employees });
     }
 
-    async findOne(id: string): Promise<ApiResponse<User>> {
+    async findOne(id: string): Promise<ApiResponse<{ employee: User }>> {
         const employee = await this.userRepository.findOne({
-            where: { id, role: UserRole.EMPLOYEE },
+            where: { id, role: UserRoles.EMPLOYEE },
         });
 
         if (!employee) {
-            return errorResponse('Employees', 'Employee not found', [`Employee with ID ${id} not found`]);
+            return errorResponse('Employees', 'Employee not found');
         }
 
-        return successResponse('Employees', 'Successfully retrieved employee', employee);
+        return successResponse('Employees', 'Successfully retrieved employee', { employee });
     }
 
-    async create(data: any): Promise<ApiResponse<User>> {
+    async create(data: CreateEmployeeDto): Promise<ApiResponse<{ employee: User }>> {
         const dto = plainToInstance(CreateEmployeeDto, data);
         const errors = await validate(dto);
         if (errors.length > 0) {
@@ -84,18 +89,24 @@ export class EmployeesService implements OnModuleInit {
             );
         }
 
+        const checkEmail = await this.authService.findOneByEmail(dto.email);
+        if (checkEmail) {
+            return errorResponse('Employees', 'Email is already in use', { email: ["Email is already in use"] });
+        }
+
         const user = new User();
         user.email = dto.email;
         user.name = dto.name;
-        user.role = UserRole.EMPLOYEE;
+        user.role = UserRoles.EMPLOYEE;
         if (dto.position) user.position = dto.position;
         user.password = await bcrypt.hash(dto.password, 10);
 
         const saved = await this.userRepository.save(user);
-        return successResponse('Employees', 'Successfully created employee', saved);
+        const { password: _, ...userData } = saved;
+        return successResponse('Employees', 'Successfully created employee', { employee: userData as User });
     }
 
-    async update(id: string, data: any): Promise<ApiResponse<User>> {
+    async update(id: string, data: UpdateEmployeeDto): Promise<ApiResponse<{ employee: User }>> {
         const dto = plainToInstance(UpdateEmployeeDto, data);
         const errors = await validate(dto);
         if (errors.length > 0) {
@@ -107,11 +118,11 @@ export class EmployeesService implements OnModuleInit {
         }
 
         const user = await this.userRepository.findOne({
-            where: { id, role: UserRole.EMPLOYEE },
+            where: { id, role: UserRoles.EMPLOYEE },
         });
 
         if (!user) {
-            return errorResponse('Employees', 'Employee not found', [`Employee with ID ${id} not found`]);
+            return errorResponse('Employees', 'Employee not found');
         }
 
         user.name = dto.name;
@@ -121,16 +132,17 @@ export class EmployeesService implements OnModuleInit {
         }
 
         const saved = await this.userRepository.save(user);
-        return successResponse('Employees', 'Successfully updated employee', saved);
+        const { password: _, ...userData } = saved;
+        return successResponse('Employees', 'Successfully updated employee', { employee: userData as User });
     }
 
     async delete(id: string): Promise<ApiResponse> {
         const user = await this.userRepository.findOne({
-            where: { id, role: UserRole.EMPLOYEE },
+            where: { id, role: UserRoles.EMPLOYEE },
         });
 
         if (!user) {
-            return errorResponse('Employees', 'Employee not found', [`Employee with ID ${id} not found`]);
+            return errorResponse('Employees', 'Employee not found');
         }
 
         await this.userRepository.remove(user);

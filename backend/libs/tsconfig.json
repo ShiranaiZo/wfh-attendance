@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es2021",
+        "sourceMap": true,
+        "baseUrl": "./",
+        "paths": {
+            "@app/contracts/*": ["./contracts/*"],
+            "@app/contracts/helpers/*": ["./helpers/*"],
+            "@app/contracts/decorators/*": ["./decorators/*"],
+            "@app/contracts/guards/*": ["./guards/*"],
+            "class-validator": ["../apps/gateway/node_modules/class-validator"],
+            "class-transformer": ["../apps/gateway/node_modules/class-transformer"],
+            "@nestjs/common": ["../apps/gateway/node_modules/@nestjs/common"],
+            "@nestjs/core": ["../apps/gateway/node_modules/@nestjs/core"],
+            "@nestjs/microservices": ["../apps/gateway/node_modules/@nestjs/microservices"],
+            "rxjs": ["../apps/gateway/node_modules/rxjs"]
+        },
+        "incremental": true,
+        "skipLibCheck": true,
+        "strictNullChecks": true,
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": false,
+        "strictBindCallApply": false,
+        "noFallthroughCasesInSwitch": false
+    },
+    "include": ["**/*"]
+}

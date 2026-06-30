@@ -13,6 +13,22 @@
                     "item": [
                         {
                             "name": "Login",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "const response = pm.response.json();",
+                                            "if (response.success && response.access_token) {",
+                                            "    pm.collectionVariables.set(\"access_token\", response.access_token);",
+                                            "    console.log(\"Access token saved to collection variables!\");",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript",
+                                        "packages": {}
+                                    }
+                                }
+                            ],
                             "request": {
                                 "method": "POST",
                                 "header": [
@@ -44,6 +60,155 @@
                             "response": []
                         }
                     ]
+                },
+                {
+                    "name": "employees",
+                    "item": [
+                        {
+                            "name": "Get All Employees",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/employees",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "employees"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Employee By ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/employees/550e8400-e29b-41d4-a716-446655440001",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "employees",
+                                        "550e8400-e29b-41d4-a716-446655440001"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Employee",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Rudi Tabuti\",\n    \"email\": \"rudi@gmail.com\",\n    \"password\": \"employee123\",\n    \"position\": \"Frontend Developer\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/employees",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "employees"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Employee",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Rudi Tabuti Updated\",\n    \"position\": \"BACKEND_DEVELOPER\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/employees/550e8400-e29b-41d4-a716-446655440001",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "employees",
+                                        "550e8400-e29b-41d4-a716-446655440001"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Employee",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/employees/550e8400-e29b-41d4-a716-446655440001",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "employees",
+                                        "550e8400-e29b-41d4-a716-446655440001"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ]
         }
@@ -67,6 +232,11 @@
         {
             "key": "user_service_url",
             "value": "http://localhost:3002",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
             "type": "string"
         }
     ]

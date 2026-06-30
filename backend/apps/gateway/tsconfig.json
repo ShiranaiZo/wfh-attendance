@@ -15,8 +15,35 @@
         "outDir": "./dist",
         "baseUrl": "./",
         "paths": {
+            "class-validator": [
+                "./node_modules/class-validator"
+            ],
+            "class-transformer": [
+                "./node_modules/class-transformer"
+            ],
+            "@nestjs/common": [
+                "./node_modules/@nestjs/common"
+            ],
+            "@nestjs/core": [
+                "./node_modules/@nestjs/core"
+            ],
+            "@nestjs/microservices": [
+                "./node_modules/@nestjs/microservices"
+            ],
+            "rxjs": [
+                "./node_modules/rxjs"
+            ],
+            "@app/contracts/helpers/*": [
+                "../../libs/helpers/*"
+            ],
+            "@app/contracts/decorators/*": [
+                "../../libs/decorators/*"
+            ],
+            "@app/contracts/guards/*": [
+                "../../libs/guards/*"
+            ],
             "@app/contracts/*": [
-                "../../libs/contracts/src/*"
+                "../../libs/contracts/*"
             ]
         },
         "incremental": true,

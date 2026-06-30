@@ -15,12 +15,7 @@ export class AuthService {
     ) { }
 
     async login(email: string, pass: string): Promise<any> {
-        const user = await this.userRepository
-            .createQueryBuilder('user')
-            .addSelect('user.password')
-            .where('user.email = :email', { email })
-            .getOne();
-
+        const user = await this.findOneByEmail(email);
 
         if (!user) {
             return errorResponse("Login", "Invalid credentials");
@@ -33,7 +28,17 @@ export class AuthService {
         }
 
         const payload = { id: user.id, email: user.email, role: user.role };
-        return successResponse("Login", "Successfully logged in", { access_token: this.jwtService.sign(payload) });
+        return successResponse("Login", "Successfully logged in", undefined, this.jwtService.sign(payload));
+    }
+
+    async findOneByEmail(email: string): Promise<User | null> {
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .addSelect('user.password')
+            .where('user.email = :email', { email })
+            .getOne();
+
+        return user;
     }
 
     async verifyToken(token: string): Promise<any> {
