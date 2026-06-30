@@ -6,7 +6,7 @@ import { Positions, User, UserRole } from '../entities/user.entity';
 import { plainToInstance } from 'class-transformer';
 import { CreateEmployeeDto, UpdateEmployeeDto } from './dto/employee.dto';
 import { validate } from 'class-validator';
-import { ApiResponse, successResponse, errorResponse } from '../helpers/response.helper';
+import { ApiResponse, successResponse, errorResponse } from '../../../../libs/contracts/src/helpers/response.helper';
 
 @Injectable()
 export class EmployeesService implements OnModuleInit {

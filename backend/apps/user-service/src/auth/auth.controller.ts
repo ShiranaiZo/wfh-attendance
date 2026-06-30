@@ -1,14 +1,17 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
+import { LoginDto } from '@app/contracts/auth/dto/login.dto';
+
+
 
 @Controller()
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @MessagePattern({ cmd: 'auth.login' })
-    async login(@Payload() data: { email?: string; username?: string; password: string }) {
-        const email = data.email || data.username || '';
+    async login(@Payload() data: LoginDto) {
+        const email = data.email || '';
         return this.authService.login(email, data.password);
     }
 

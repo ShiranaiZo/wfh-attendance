@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
+import { errorResponse, successResponse } from '@app/contracts/helpers/response.helper';
 
 @Injectable()
 export class AuthService {
@@ -20,20 +21,19 @@ export class AuthService {
             .where('user.email = :email', { email })
             .getOne();
 
+
         if (!user) {
-            return { success: false, message: 'Invalid credentials' };
+            return errorResponse("Login", "Invalid credentials");
+
         }
 
         const isMatch = await bcrypt.compare(pass, user.password);
         if (!isMatch) {
-            return { success: false, message: 'Invalid credentials' };
+            return errorResponse("Login", "Invalid credentials");
         }
 
         const payload = { id: user.id, email: user.email, role: user.role };
-        return {
-            success: true,
-            access_token: this.jwtService.sign(payload),
-        };
+        return successResponse("Login", "Successfully logged in", { access_token: this.jwtService.sign(payload) });
     }
 
     async verifyToken(token: string): Promise<any> {
