@@ -31,9 +31,9 @@
                                     }
                                 },
                                 "url": {
-                                    "raw": "{{gateway_url}}/auth/login",
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/auth/login",
                                     "host": [
-                                        "{{gateway_url}}"
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -52,6 +52,16 @@
         {
             "key": "gateway_url",
             "value": "http://localhost:3001",
+            "type": "string"
+        },
+        {
+            "key": "api_path",
+            "value": "api",
+            "type": "string"
+        },
+        {
+            "key": "api_version",
+            "value": "v1",
             "type": "string"
         },
         {

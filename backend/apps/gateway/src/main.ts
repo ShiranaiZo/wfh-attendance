@@ -18,6 +18,8 @@ async function bootstrap() {
         }),
     );
 
+    app.setGlobalPrefix(`/${process.env.API_PATH}/${process.env.API_VERSION}`)
+
     const port = process.env.APP_PORT || 3001;
     await app.listen(port);
     console.log(`[HTTP Gateway] Listening on: http://localhost:${port}`);
