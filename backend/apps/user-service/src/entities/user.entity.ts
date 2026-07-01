@@ -21,6 +21,7 @@ export class User {
         enum: UserRoles,
         default: UserRoles.EMPLOYEE,
     })
+
     role!: UserRoles;
 
     @Column({

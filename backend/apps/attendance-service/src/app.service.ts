@@ -1,0 +1,91 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Attendance } from './entities/attendance.entity';
+import { Between, Repository, Like } from 'typeorm';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
+import { EMPLOYEES_PATTERN } from '@app/contracts/employees/employees.pattern';
+import { EmployeeDto } from '@app/contracts/employees/dto/employee.dto';
+import { AttendanceDto } from '@app/contracts/attendances/dto/attendance.dto';
+import { ApiResponse, successResponse } from '@app/contracts/helpers/response.helper';
+import { CreateAttendanceDto } from '@app/contracts/attendances/dto/create-attendance.dto';
+import { plainToInstance } from 'class-transformer';
+
+
+@Injectable()
+export class AppService {
+    constructor(
+        @InjectRepository(Attendance)
+        private readonly attendanceRepository: Repository<Attendance>,
+        @Inject('USER_SERVICE')
+        private readonly userClient: ClientProxy,
+    ) { }
+
+    async findAll(date?: string): Promise<ApiResponse> {
+        const attendances = await this.attendanceRepository.find({
+            where: date
+                ? {
+                    clockIn: Between(
+                        new Date(`${date}T00:00:00`),
+                        new Date(`${date}T23:59:59.999`),
+                    ),
+                }
+                : undefined,
+            order: { clockIn: 'DESC' }
+        });
+
+        let employees: EmployeeDto[] = [];
+        try {
+            const res = await lastValueFrom(
+                this.userClient.send<any>({ cmd: EMPLOYEES_PATTERN.FIND_ALL }, {})
+            );
+
+            if (res && res.success && Array.isArray(res.data?.employees)) {
+                employees = res.data.employees;
+            }
+        } catch (err: any) {
+            console.error('[Attendance Service] Failed to fetch employees data:', err.message);
+        }
+
+        const employeeMap = new Map(employees.map((p) => [p.id, p]));
+
+        const result = attendances.map((attendance) => ({
+            ...attendance,
+            employee: employeeMap.get(attendance.userId),
+        }));
+
+        return successResponse('Attendances', 'Successfully retrieved all employees attendances', { attendances: result });
+    }
+
+
+
+    async findAllByEmployee(userId: string): Promise<ApiResponse> {
+        const attendances = await this.attendanceRepository.find({
+            where: { userId },
+            order: { clockIn: 'DESC' },
+        });
+
+        return successResponse('Attendances', 'Successfully retrieved user attendances', { attendances: attendances });
+    }
+
+    async clockIn(data: CreateAttendanceDto): Promise<ApiResponse> {
+        const attendance = new Attendance();
+        attendance.userId = data.userId;
+        attendance.clockIn = new Date();
+        attendance.image = data.image;
+        attendance.notes = data.notes;
+
+        const saved = await this.attendanceRepository.save(attendance);
+        return successResponse('Attendances', 'Successfully clocked in', { attendance: saved });
+    }
+
+    async findImageByFilename(filename: string): Promise<ApiResponse> {
+        const attendance = await this.attendanceRepository.findOne({
+            where: {
+                image: Like(`%/${filename}`),
+            },
+        });
+
+        return successResponse('Attendances', 'Successfully retrieved attendance by image', { attendance });
+    }
+}

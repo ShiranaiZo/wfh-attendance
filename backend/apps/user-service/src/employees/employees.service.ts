@@ -8,6 +8,7 @@ import { UserRoles } from '@app/contracts/helpers/user-roles.helper';
 import { plainToInstance } from 'class-transformer';
 import { CreateEmployeeDto } from '@app/contracts/employees/dto/create-employee.dto';
 import { UpdateEmployeeDto } from '@app/contracts/employees/dto/update-employee.dto';
+import { EmployeeDto } from '@app/contracts/employees/dto/employee.dto';
 import { validate } from 'class-validator';
 import { AuthService } from '../auth/auth.service';
 import { ApiResponse, successResponse, errorResponse } from '@app/contracts/helpers/response.helper';
@@ -58,15 +59,15 @@ export class EmployeesService implements OnModuleInit {
         }
     }
 
-    async findAll(): Promise<ApiResponse<{ employees: User[] }>> {
+    async findAll(): Promise<ApiResponse> {
         const employees = await this.userRepository.find({
             where: { role: UserRoles.EMPLOYEE },
             order: { createdAt: 'DESC' },
         });
-        return successResponse('Employees', 'Successfully retrieved all employees', { employees });
+        return successResponse('Employees', 'Successfully retrieved all employees', { employees: employees });
     }
 
-    async findOne(id: string): Promise<ApiResponse<{ employee: User }>> {
+    async findOne(id: string): Promise<ApiResponse> {
         const employee = await this.userRepository.findOne({
             where: { id, role: UserRoles.EMPLOYEE },
         });
@@ -75,10 +76,10 @@ export class EmployeesService implements OnModuleInit {
             return errorResponse('Employees', 'Employee not found');
         }
 
-        return successResponse('Employees', 'Successfully retrieved employee', { employee });
+        return successResponse('Employees', 'Successfully retrieved employee', { employee: employee });
     }
 
-    async create(data: CreateEmployeeDto): Promise<ApiResponse<{ employee: User }>> {
+    async create(data: CreateEmployeeDto): Promise<ApiResponse> {
         const dto = plainToInstance(CreateEmployeeDto, data);
         const errors = await validate(dto);
         if (errors.length > 0) {
@@ -103,10 +104,10 @@ export class EmployeesService implements OnModuleInit {
 
         const saved = await this.userRepository.save(user);
         const { password: _, ...userData } = saved;
-        return successResponse('Employees', 'Successfully created employee', { employee: userData as User });
+        return successResponse('Employees', 'Successfully created employee', userData);
     }
 
-    async update(id: string, data: UpdateEmployeeDto): Promise<ApiResponse<{ employee: User }>> {
+    async update(id: string, data: UpdateEmployeeDto): Promise<ApiResponse> {
         const dto = plainToInstance(UpdateEmployeeDto, data);
         const errors = await validate(dto);
         if (errors.length > 0) {
@@ -133,7 +134,7 @@ export class EmployeesService implements OnModuleInit {
 
         const saved = await this.userRepository.save(user);
         const { password: _, ...userData } = saved;
-        return successResponse('Employees', 'Successfully updated employee', { employee: userData as User });
+        return successResponse('Employees', 'Successfully updated employee', userData);
     }
 
     async delete(id: string): Promise<ApiResponse> {

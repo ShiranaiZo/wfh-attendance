@@ -2,6 +2,7 @@ import { Injectable, CanActivate, ExecutionContext, Inject, HttpException, HttpS
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { errorResponse } from '../helpers/response.helper';
+import { AUTH_PATTERNS } from '@app/contracts/auth/auth.patterns';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -9,33 +10,31 @@ export class AuthGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
-        const authHeader = request.headers.authorization;
-        if (!authHeader) {
-            const res = errorResponse('Auth Guard', 'Authorization header is missing');
-            throw new HttpException(res, HttpStatus.UNAUTHORIZED);
 
-        }
+        const authHeader = request.headers.authorization || '';
+        const token = authHeader.startsWith('Bearer ')
+            ? authHeader.split(' ')[1]?.trim()
+            : (request.query?.token as string || '');
 
-        const [type, token] = authHeader.split(' ');
-        if (type !== 'Bearer' || !token) {
-            const res = errorResponse('Auth Guard', 'Invalid authorization token format');
+        if (!token) {
+            const res = errorResponse('Unauthorized', 'Please log in first');
             throw new HttpException(res, HttpStatus.UNAUTHORIZED);
         }
 
         try {
             const user = await lastValueFrom(
-                this.employeeClient.send({ cmd: 'auth.verify-token' }, { token })
+                this.employeeClient.send({ cmd: AUTH_PATTERNS.VERIFY_TOKEN }, { token })
             );
 
             if (!user) {
-                const res = errorResponse('Auth Guard', 'Invalid or expired token');
+                const res = errorResponse('Unauthorized', 'Session expired, please log in again');
                 throw new HttpException(res, HttpStatus.UNAUTHORIZED);
             }
 
             request.user = user;
             return true;
         } catch (err) {
-            const res = errorResponse('Auth Guard', 'Token validation failed');
+            const res = errorResponse('Unauthorized', 'Authentication failed');
             throw new HttpException(res, HttpStatus.UNAUTHORIZED);
         }
     }

@@ -1,4 +1,4 @@
-export const EMPLOYEES_PATTERNS = {
+export const EMPLOYEES_PATTERN = {
     FIND_ALL: "employees.find-all",
     FIND_ONE: "employees.find-by-id",
     CREATE: "employees.create",

@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
-import { errorResponse, successResponse } from '@app/contracts/helpers/response.helper';
+import { ApiResponse, errorResponse, successResponse } from '@app/contracts/helpers/response.helper';
+import { AuthPayloadDto } from '@app/contracts/auth/dto/auth-payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) { }
 
-    async login(email: string, pass: string): Promise<any> {
+    async login(email: string, pass: string): Promise<ApiResponse> {
         const user = await this.findOneByEmail(email);
 
         if (!user) {
@@ -27,7 +28,7 @@ export class AuthService {
             return errorResponse("Login", "Invalid credentials");
         }
 
-        const payload = { id: user.id, email: user.email, role: user.role };
+        const payload: AuthPayloadDto = { id: user.id, email: user.email, role: user.role };
         return successResponse("Login", "Successfully logged in", undefined, this.jwtService.sign(payload));
     }
 
@@ -41,9 +42,9 @@ export class AuthService {
         return user;
     }
 
-    async verifyToken(token: string): Promise<any> {
+    async verifyToken(token: string): Promise<User | null> {
         try {
-            const decoded = this.jwtService.verify(token);
+            const decoded = this.jwtService.verify<AuthPayloadDto>(token);
 
             const user = await this.userRepository.findOne({
                 where: { id: decoded.id },

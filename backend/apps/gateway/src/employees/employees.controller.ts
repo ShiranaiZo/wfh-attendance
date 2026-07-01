@@ -7,7 +7,7 @@ import { AuthGuard } from '@app/contracts/guards/auth.guard';
 import { RolesGuard } from '@app/contracts/guards/roles.guard';
 import { CreateEmployeeDto } from '@app/contracts/employees/dto/create-employee.dto';
 import { UpdateEmployeeDto } from '@app/contracts/employees/dto/update-employee.dto';
-import { EMPLOYEES_PATTERNS } from '@app/contracts/employees/employees.pattern';
+import { EMPLOYEES_PATTERN } from '@app/contracts/employees/employees.pattern';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRoles.HRD)
@@ -17,12 +17,18 @@ export class EmployeesController {
 
     @Get()
     async findAll() {
-        return lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERNS.FIND_ALL }, {}));
+        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERN.FIND_ALL }, {}));
+
+        if (!res || !res.success) {
+            throw new HttpException(res, res.statusCode);
+        }
+
+        return res;
     }
 
     @Get(':id')
     async findOne(@Param('id') id: string) {
-        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERNS.FIND_ONE }, { id }));
+        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERN.FIND_ONE }, { id }));
 
         if (!res || !res.success) {
             throw new HttpException(res, res.statusCode);
@@ -33,7 +39,7 @@ export class EmployeesController {
 
     @Post()
     async create(@Body() body: CreateEmployeeDto) {
-        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERNS.CREATE }, body));
+        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERN.CREATE }, body));
 
         if (!res || !res.success) {
             throw new HttpException(res, res.statusCode);
@@ -44,7 +50,7 @@ export class EmployeesController {
 
     @Put(':id')
     async update(@Param('id') id: string, @Body() body: UpdateEmployeeDto) {
-        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERNS.UPDATE }, { id, updateDto: body }));
+        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERN.UPDATE }, { id, updateDto: body }));
 
         if (!res || !res.success) {
             throw new HttpException(res, res.statusCode);
@@ -54,7 +60,7 @@ export class EmployeesController {
 
     @Delete(':id')
     async delete(@Param('id') id: string) {
-        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERNS.DELETE }, { id }));
+        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERN.DELETE }, { id }));
 
         if (!res || !res.success) {
             throw new HttpException(res, res.statusCode);

@@ -209,6 +209,130 @@
                             "response": []
                         }
                     ]
+                },
+                {
+                    "name": "attendances",
+                    "item": [
+                        {
+                            "name": "Get All Attendances",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/attendances",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "attendances"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "date",
+                                            "value": "2026-07-01",
+                                            "description": "Filter by date (YYYY-MM-DD)",
+                                            "disabled": true
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Clock In",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "const response = pm.response.json();",
+                                            "if (response && response.success && response.data && response.data.attendance) {",
+                                            "    const imageUrl = response.data.attendance.image;",
+                                            "    const parts = imageUrl.split('/');",
+                                            "    const filename = parts[parts.length - 1];",
+                                            "    pm.collectionVariables.set(\"attendance_filename\", filename);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "image",
+                                            "type": "file",
+                                            "src": []
+                                        },
+                                        {
+                                            "key": "notes",
+                                            "value": "Slicing landing page UI",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/attendances/clockin",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "attendances",
+                                        "clockin"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Attendance Image",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{gateway_url}}/{{api_path}}/{{api_version}}/attendances/uploads/:filename?token={{access_token}}",
+                                    "host": [
+                                        "{{gateway_url}}/{{api_path}}/{{api_version}}"
+                                    ],
+                                    "path": [
+                                        "attendances",
+                                        "uploads",
+                                        ":filename"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{access_token}}"
+                                        }
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "filename",
+                                            "value": "{{attendance_filename}}",
+                                            "description": "The attendance image filename returned from clock-in"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ]
         }
@@ -236,6 +360,11 @@
         },
         {
             "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "attendance_filename",
             "value": "",
             "type": "string"
         }
