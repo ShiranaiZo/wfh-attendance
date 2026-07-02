@@ -50,7 +50,7 @@ export function LayoutSectionSidebar() {
                     <SidebarGroupContent>
                         <SidebarMenu className="flex flex-col gap-y-2">
                             {menuItems.map((item) => {
-                                const isActive = location.pathname === item.url || (item.url === AppRoutes.ADMIN && location.pathname === "/")
+                                const isActive = item.url === AppRoutes.ADMIN ? location.pathname === AppRoutes.ADMIN : location.pathname.startsWith(item.url)
 
                                 return (
                                     <SidebarMenuItem key={item.title}>

@@ -15,7 +15,7 @@ export function AuthSectionLogin() {
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<{ email?: boolean; password?: boolean }>({});
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const newErrors: typeof errors = {};
