@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { AttendanceType } from "@/lib/types/attendance";
 
-export function EmployeeAttendancesSectionColumns(): ColumnDef<AttendanceType>[] {
+export function EmployeeAttendancesSectionColumns({ isAdmin = false }: { isAdmin?: boolean }): ColumnDef<AttendanceType>[] {
     return [
         {
             accessorKey: "clockin",
@@ -30,6 +30,31 @@ export function EmployeeAttendancesSectionColumns(): ColumnDef<AttendanceType>[]
                     <span className="text-muted-foreground italic">-</span>
                 ),
         },
+        ...(isAdmin ?
+            [
+                {
+                    accessorKey: "employee.name",
+                    header: "Employee Name",
+                    cell: ({ row }) =>
+                        row?.original?.employee?.name ? (
+                            row.original.employee?.name
+                        ) : (
+                            <span className="text-muted-foreground italic">-</span>
+                        ),
+                } as ColumnDef<AttendanceType>,
+                {
+                    accessorKey: "employee.position",
+                    header: "Position",
+                    cell: ({ row }) =>
+                        row?.original?.employee?.position ? (
+                            row.original.employee?.position
+                        ) : (
+                            <span className="text-muted-foreground italic">-</span>
+                        ),
+                } as ColumnDef<AttendanceType>,
+            ]
+            : []
+        ),
         {
             accessorKey: "notes",
             header: "Notes",

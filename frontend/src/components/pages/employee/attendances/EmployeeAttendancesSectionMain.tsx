@@ -9,11 +9,12 @@ interface Props {
     isLoading: boolean;
     error: string | null;
     additionalClass?: string;
+    isAdmin?: boolean;
 }
 
-export function EmployeeAttendancesSectionMain({ data, isLoading, error, additionalClass = "" }: Props) {
+export function EmployeeAttendancesSectionMain({ data, isLoading, error, additionalClass = "", isAdmin = false }: Props) {
     const columns = useMemo(
-        () => EmployeeAttendancesSectionColumns(),
+        () => EmployeeAttendancesSectionColumns({ isAdmin }),
         []
     );
 

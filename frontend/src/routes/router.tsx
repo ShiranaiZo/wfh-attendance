@@ -12,6 +12,7 @@ import AdminEmployeesPage from "@/pages/admin/employees/AdminEmployeesPage";
 import AdminEmployeesCreatePage from "@/pages/admin/employees/AdminEmployeesCreatePage";
 import AdminEmployeesEditPage from "@/pages/admin/employees/AdminEmployeesEditPage";
 import EmployeeAttendancesPage from "@/pages/employee/attendance/EmployeeAttendancePage";
+import AdminAttendancesPage from "@/pages/admin/attendances/AdminAttendancesPage";
 
 export const router = createBrowserRouter([
     {
@@ -66,6 +67,14 @@ export const router = createBrowserRouter([
                     {
                         path: AppRoutes.ADMIN_EMPLOYEES_EDIT,
                         element: <AdminEmployeesEditPage />,
+                    },
+                    {
+                        path: AppRoutes.ADMIN_EMPLOYEES_EDIT,
+                        element: <AdminEmployeesEditPage />,
+                    },
+                    {
+                        path: AppRoutes.ADMIN_ATTENDANCES,
+                        element: <AdminAttendancesPage />,
                     },
                 ],
             },
