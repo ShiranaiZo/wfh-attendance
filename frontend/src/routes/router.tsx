@@ -7,6 +7,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { MiddlewareAuth, MiddlewareGuest } from "@/middlewares/MiddlewareAuth";
 import { UserRoles } from "@/lib/helpers/auth";
 import { AppRoutes } from "@/lib/helpers/app-routes";
+import NotFoundPage from "@/pages/errors/NotFoundPage";
 
 export const router = createBrowserRouter([
     {
@@ -51,6 +52,16 @@ export const router = createBrowserRouter([
                         element: <DashboardPage />,
                     },
                 ],
+            },
+        ],
+    },
+    {
+        path: "*",
+        element: <LayoutAuth />,
+        children: [
+            {
+                path: "*",
+                element: <NotFoundPage />,
             },
         ],
     },
