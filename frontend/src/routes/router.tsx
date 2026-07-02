@@ -1,5 +1,7 @@
+import LoginPage from "@/pages/auth/LoginPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
-import Layout from "@/pages/dashboard/Layout";
+import LayoutAuth from "@/pages/Layout/LayoutAuth";
+import LayoutDashboard from "@/pages/Layout/LayoutDashboard";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
@@ -8,8 +10,18 @@ export const router = createBrowserRouter([
         element: <DashboardPage />
     },
     {
+        path: "/login",
+        element: <LayoutAuth />,
+        children: [
+            {
+                path: "",
+                element: <LoginPage />,
+            },
+        ],
+    },
+    {
         path: "/dashboard",
-        element: <Layout />,
+        element: <LayoutDashboard />,
         children: [
             {
                 path: "",

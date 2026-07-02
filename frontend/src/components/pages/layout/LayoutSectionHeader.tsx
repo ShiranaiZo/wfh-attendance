@@ -9,7 +9,7 @@ export function LayoutSectionHeader() {
             <SidebarTrigger size="icon-lg" />
 
             <div className="flex items-center justify-between">
-                <Button variant="destructive" className="flex items-center gap-2">
+                <Button variant="destructive" className="flex items-center gap-2 cursor-pointer">
                     <LogOutIcon className="size-4" />
                     Logout
                 </Button>
