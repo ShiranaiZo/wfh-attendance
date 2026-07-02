@@ -68,17 +68,6 @@ export function AdminEmployeesSectionDatatable<TData, TValue>({
     return (
         <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div className="relative w-full max-w-xs">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4" />
-                    <Input
-                        id="employee-search"
-                        placeholder="Search employees..."
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="pl-9"
-                    />
-                </div>
-
                 <div className="flex items-center gap-2 text-sm shrink-0">
                     <span>Show</span>
 
@@ -95,6 +84,17 @@ export function AdminEmployeesSectionDatatable<TData, TValue>({
                     </Select>
 
                     <span>entries</span>
+                </div>
+
+                <div className="relative w-full max-w-xs">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4" />
+                    <Input
+                        id="employee-search"
+                        placeholder="Search employees..."
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="pl-9"
+                    />
                 </div>
             </div>
 
