@@ -13,13 +13,13 @@ import {
 } from "@/components/ui/select";
 import { AppRoutes } from "@/lib/helpers/app-routes";
 import { Positions } from "@/lib/helpers/positions";
-import type { CreateEmployeePayload, Employee, UpdateEmployeePayload } from "@/lib/types/employee";
+import type { CreateEmployeePayloadType, EmployeeType, UpdateEmployeePayloadType } from "@/lib/types/employee";
 import { apiCreateEmployee, apiUpdateEmployee } from "@/lib/api/employee";
 import { ArrowLeft } from "lucide-react";
 
 interface Props {
     mode: "create" | "edit";
-    employee?: Employee;
+    employee?: EmployeeType;
 }
 
 interface FormErrors {
@@ -64,7 +64,7 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
 
         try {
             if (isEdit && employee) {
-                const payload: UpdateEmployeePayload = {
+                const payload: UpdateEmployeePayloadType = {
                     name: name.trim(),
                     position: position === "" ? undefined : position,
                 };
@@ -73,7 +73,7 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
 
                 await apiUpdateEmployee(employee.id, payload);
             } else {
-                const payload: CreateEmployeePayload = {
+                const payload: CreateEmployeePayloadType = {
                     name: name.trim(),
                     email: email.trim(),
                     password: password.trim(),

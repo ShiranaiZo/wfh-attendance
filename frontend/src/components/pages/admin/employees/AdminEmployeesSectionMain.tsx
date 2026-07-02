@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import type { Employee } from "@/lib/types/employee";
+import type { EmployeeType } from "@/lib/types/employee";
 import { AdminEmployeesSectionDatatable } from "./AdminEmployeesSectionDatatable";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { UserPlus } from "lucide-react";
 import { AdminEmployeesSectionColumns } from "./AdminEmployeesSectionColumns";
 
 interface Props {
-    data: Employee[];
+    data: EmployeeType[];
     isLoading: boolean;
     error: string | null;
     onRefresh: () => void;
@@ -27,14 +27,14 @@ interface Props {
 
 export function AdminEmployeesSectionMain({ data, isLoading, error, onRefresh }: Props) {
     const navigate = useNavigate();
-    const [deleteTarget, setDeleteTarget] = useState<Employee | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<EmployeeType | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleEdit = (employee: Employee) => {
+    const handleEdit = (employee: EmployeeType) => {
         navigate(`/admin/employees/edit/${employee.id}`);
     };
 
-    const handleDelete = (employee: Employee) => {
+    const handleDelete = (employee: EmployeeType) => {
         setDeleteTarget(employee);
     };
 

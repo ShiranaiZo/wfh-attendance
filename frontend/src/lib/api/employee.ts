@@ -1,7 +1,7 @@
 import { api } from "./api"
-import type { CreateEmployeePayload, Employee, UpdateEmployeePayload } from "../types/employee"
+import type { CreateEmployeePayloadType, EmployeeType, UpdateEmployeePayloadType } from "../types/employee"
 
-export async function apiGetEmployees(): Promise<Employee[]> {
+export async function apiGetEmployees(): Promise<EmployeeType[]> {
     const res = await api.get("/employees")
     if (!res.data?.success) {
         throw new Error(res.data?.message ?? "Failed to get employees")
@@ -9,7 +9,7 @@ export async function apiGetEmployees(): Promise<Employee[]> {
     return res.data?.data?.employees ?? []
 }
 
-export async function apiGetEmployee(id: string): Promise<Employee> {
+export async function apiGetEmployee(id: string): Promise<EmployeeType> {
     const res = await api.get(`/employees/${id}`)
 
     if (!res.data?.success) {
@@ -19,7 +19,7 @@ export async function apiGetEmployee(id: string): Promise<Employee> {
     return res.data?.data?.employee
 }
 
-export async function apiCreateEmployee(data: CreateEmployeePayload): Promise<void> {
+export async function apiCreateEmployee(data: CreateEmployeePayloadType): Promise<void> {
     const res = await api.post("/employees", data)
     if (!res.data?.success) {
         const err: any = new Error(res.data?.message ?? "Failed to create employee")
@@ -28,7 +28,7 @@ export async function apiCreateEmployee(data: CreateEmployeePayload): Promise<vo
     }
 }
 
-export async function apiUpdateEmployee(id: string, data: UpdateEmployeePayload): Promise<void> {
+export async function apiUpdateEmployee(id: string, data: UpdateEmployeePayloadType): Promise<void> {
     const res = await api.put(`/employees/${id}`, data)
     if (!res.data?.success) {
         const err: any = new Error(res.data?.message ?? "Failed to update employee")

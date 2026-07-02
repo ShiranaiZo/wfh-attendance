@@ -1,9 +1,4 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { EditIcon } from "lucide-react"
-
-export type Employee = {
+export type EmployeeType = {
     id: string
     name: string
     email: string
@@ -14,14 +9,14 @@ export type Employee = {
 }
 
 
-export interface CreateEmployeePayload {
+export interface CreateEmployeePayloadType {
     name: string
     email: string
     password: string
     position?: string
 }
 
-export interface UpdateEmployeePayload {
+export interface UpdateEmployeePayloadType {
     name: string
     position?: string
     password?: string

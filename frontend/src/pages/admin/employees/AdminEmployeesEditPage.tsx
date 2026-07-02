@@ -3,14 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { AdminEmployeesSectionForm } from "@/components/pages/admin/employees/AdminEmployeesSectionForm";
 import { apiGetEmployee } from "@/lib/api/employee";
-import type { Employee } from "@/lib/types/employee";
+import type { EmployeeType } from "@/lib/types/employee";
 import { AppRoutes } from "@/lib/helpers/app-routes";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminEmployeesEditPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [employee, setEmployee] = useState<Employee | null>(null);
+    const [employee, setEmployee] = useState<EmployeeType | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {

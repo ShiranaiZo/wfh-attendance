@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { AdminEmployeesSectionMain } from "@/components/pages/admin/employees/AdminEmployeesSectionMain";
 import { apiGetEmployees } from "@/lib/api/employee";
-import type { Employee } from "@/lib/types/employee";
+import type { EmployeeType } from "@/lib/types/employee";
 
 export default function AdminEmployeesPage() {
-    const [data, setData] = useState<Employee[]>([]);
+    const [data, setData] = useState<EmployeeType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 

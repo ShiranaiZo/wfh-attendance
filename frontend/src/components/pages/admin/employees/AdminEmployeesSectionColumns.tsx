@@ -1,18 +1,17 @@
 import { Button } from "@/components/ui/button";
-import type { Employee } from "@/lib/types/employee";
+import type { EmployeeType } from "@/lib/types/employee";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
 import { EditIcon, TrashIcon } from "lucide-react";
 
 interface ColumnsOptions {
-    onEdit: (employee: Employee) => void;
-    onDelete: (employee: Employee) => void;
+    onEdit: (employee: EmployeeType) => void;
+    onDelete: (employee: EmployeeType) => void;
 }
 
 export function AdminEmployeesSectionColumns({
     onEdit,
     onDelete,
-}: ColumnsOptions): ColumnDef<Employee>[] {
+}: ColumnsOptions): ColumnDef<EmployeeType>[] {
     return [
         {
             accessorKey: "name",
@@ -29,23 +28,8 @@ export function AdminEmployeesSectionColumns({
                 row.original.position ? (
                     <span>{row.original.position}</span>
                 ) : (
-                    <span className="text-muted-foreground italic">—</span>
+                    <span className="text-muted-foreground italic">-</span>
                 ),
-        },
-        {
-            accessorKey: "createdAt",
-            header: "Joined At",
-            cell: ({ row }) =>
-                new Date(row.original.createdAt).toLocaleDateString("id-ID", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                }),
-        },
-        {
-            id: "status",
-            header: "Status",
-            cell: () => <Badge variant="secondary">Active</Badge>,
         },
         {
             id: "actions",

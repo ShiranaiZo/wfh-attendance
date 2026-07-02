@@ -11,6 +11,7 @@ import NotFoundPage from "@/pages/errors/NotFoundPage";
 import AdminEmployeesPage from "@/pages/admin/employees/AdminEmployeesPage";
 import AdminEmployeesCreatePage from "@/pages/admin/employees/AdminEmployeesCreatePage";
 import AdminEmployeesEditPage from "@/pages/admin/employees/AdminEmployeesEditPage";
+import EmployeeAttendancesPage from "@/pages/employee/attendance/EmployeeAttendancePage";
 
 export const router = createBrowserRouter([
     {
@@ -35,10 +36,10 @@ export const router = createBrowserRouter([
                 path: AppRoutes.EMPLOYEE,
                 element: <LayoutDashboardEmployee />,
                 children: [
-                    // {
-                    //     path: "/attendance",
-                    //     element: <AttendancePage />,
-                    // },
+                    {
+                        path: "",
+                        element: <EmployeeAttendancesPage />,
+                    },
                 ],
             },
         ],
