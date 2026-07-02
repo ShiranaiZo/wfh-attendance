@@ -1,0 +1,6 @@
+{
+    "css.format.spaceAfterColon": false,
+    "[css]": {
+        "editor.formatOnSave": false
+    }
+}
