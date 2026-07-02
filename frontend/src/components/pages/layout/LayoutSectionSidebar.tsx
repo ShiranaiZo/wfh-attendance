@@ -12,6 +12,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { GeneralLogo } from "@/components/general/GeneralLogo"
+import { AppRoutes } from "@/lib/helpers/app-routes"
 
 export function LayoutSectionSidebar() {
     const location = useLocation()
@@ -19,17 +20,17 @@ export function LayoutSectionSidebar() {
     const menuItems = [
         {
             title: "Dashboard",
-            url: "/dashboard",
+            url: AppRoutes.ADMIN,
             icon: LayoutDashboard,
         },
         {
             title: "Attendances",
-            url: "/dashboard/attendances",
+            url: AppRoutes.ADMIN_ATTENDANCES,
             icon: CalendarCheck,
         },
         {
             title: "Employees",
-            url: "/dashboard/employees",
+            url: AppRoutes.ADMIN_EMPLOYEES,
             icon: Users,
         },
     ]
@@ -49,7 +50,7 @@ export function LayoutSectionSidebar() {
                     <SidebarGroupContent>
                         <SidebarMenu className="flex flex-col gap-y-2">
                             {menuItems.map((item) => {
-                                const isActive = location.pathname === item.url || (item.url === "/dashboard" && location.pathname === "/")
+                                const isActive = location.pathname === item.url || (item.url === AppRoutes.ADMIN && location.pathname === "/")
 
                                 return (
                                     <SidebarMenuItem key={item.title}>

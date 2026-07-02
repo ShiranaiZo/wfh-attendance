@@ -4,35 +4,53 @@ import LayoutAuth from "@/pages/layout/LayoutAuth";
 import LayoutDashboardAdmin from "@/pages/layout/LayoutDashboardAdmin";
 import LayoutDashboardEmployee from "@/pages/layout/LayoutDashboardEmployee";
 import { createBrowserRouter } from "react-router-dom";
+import { MiddlewareAuth, MiddlewareGuest } from "@/middlewares/MiddlewareAuth";
+import { UserRoles } from "@/lib/helpers/auth";
+import { AppRoutes } from "@/lib/helpers/app-routes";
 
 export const router = createBrowserRouter([
     {
-        path: "/login",
-        element: <LayoutAuth />,
+        element: <MiddlewareGuest />,
         children: [
             {
-                path: "",
-                element: <LoginPage />,
+                path: AppRoutes.LOGIN,
+                element: <LayoutAuth />,
+                children: [
+                    {
+                        path: "",
+                        element: <LoginPage />,
+                    },
+                ],
             },
         ],
     },
     {
-        path: "/",
-        element: <LayoutDashboardEmployee />,
+        element: <MiddlewareAuth allowedRoles={[UserRoles.EMPLOYEE]} />,
         children: [
-            // {
-            //     path: "/attendance",
-            //     element: <AttendancePage />,
-            // },
+            {
+                path: AppRoutes.EMPLOYEE,
+                element: <LayoutDashboardEmployee />,
+                children: [
+                    // {
+                    //     path: "/attendance",
+                    //     element: <AttendancePage />,
+                    // },
+                ],
+            },
         ],
     },
     {
-        path: "/admin",
-        element: <LayoutDashboardAdmin />,
+        element: <MiddlewareAuth allowedRoles={[UserRoles.HRD]} />,
         children: [
             {
-                path: "",
-                element: <DashboardPage />,
+                path: AppRoutes.ADMIN,
+                element: <LayoutDashboardAdmin />,
+                children: [
+                    {
+                        path: "",
+                        element: <DashboardPage />,
+                    },
+                ],
             },
         ],
     },

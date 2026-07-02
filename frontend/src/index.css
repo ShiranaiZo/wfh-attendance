@@ -157,4 +157,13 @@
     button {
         @apply py-4 px-2 cursor-pointer;
     }
+
+    [data-slot="field"]:has(input[required]) [data-slot="field-label"]::after {
+        content: "*";
+        color: var(--destructive);
+    }
+    
+    [data-slot="field"]:has(input[required]) [data-slot="field-label"] {
+        @apply !gap-0;
+    }
 }
