@@ -11,7 +11,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { general } from "@/lib/assets"
+import { GeneralLogo } from "@/components/general/GeneralLogo"
 
 export function LayoutSectionSidebar() {
     const location = useLocation()
@@ -37,13 +37,7 @@ export function LayoutSectionSidebar() {
     return (
         <Sidebar className="border-r">
             <SidebarHeader className="border-b py-3 px-5 h-16 flex justify-center">
-                <div className="flex items-center justify-center gap-3">
-                    <div className="w-8 h-auto overflow-hidden">
-                        <img src={general.logo} alt="logo" loading="lazy" className="w-full h-full object-cover object-center" />
-                    </div>
-
-                    <p className="font-bold text-lg">Attendances</p>
-                </div>
+                <GeneralLogo />
             </SidebarHeader>
 
             <SidebarContent className="px-3 py-4">

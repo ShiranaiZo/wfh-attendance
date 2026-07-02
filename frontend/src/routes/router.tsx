@@ -1,14 +1,11 @@
+import DashboardPage from "@/pages/admin/dashboard/AdminDashboardPage";
 import LoginPage from "@/pages/auth/LoginPage";
-import DashboardPage from "@/pages/dashboard/DashboardPage";
-import LayoutAuth from "@/pages/Layout/LayoutAuth";
-import LayoutDashboard from "@/pages/Layout/LayoutDashboard";
+import LayoutAuth from "@/pages/layout/LayoutAuth";
+import LayoutDashboardAdmin from "@/pages/layout/LayoutDashboardAdmin";
+import LayoutDashboardEmployee from "@/pages/layout/LayoutDashboardEmployee";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <DashboardPage />
-    },
     {
         path: "/login",
         element: <LayoutAuth />,
@@ -20,8 +17,18 @@ export const router = createBrowserRouter([
         ],
     },
     {
-        path: "/dashboard",
-        element: <LayoutDashboard />,
+        path: "/",
+        element: <LayoutDashboardEmployee />,
+        children: [
+            // {
+            //     path: "/attendance",
+            //     element: <AttendancePage />,
+            // },
+        ],
+    },
+    {
+        path: "/admin",
+        element: <LayoutDashboardAdmin />,
         children: [
             {
                 path: "",
