@@ -1,0 +1,17 @@
+{
+    "name": "wfh-attendance-root",
+    "version": "1.0.0",
+    "description": "Root package.json for WFH Attendance project",
+    "scripts": {
+        "install:all": "cd frontend && npm install && cd ../backend/apps/gateway && npm install && cd ../user-service && npm install && cd ../attendance-service && npm install",
+        "start": "npx concurrently \"npm run start:fe\" \"npm run start:gateway\" \"npm run start:user\" \"npm run start:attendance\"",
+        "start:fe": "cd frontend && npm run dev",
+        "start:gateway": "cd backend/apps/gateway && npm run start:dev",
+        "start:user": "cd backend/apps/user-service && npm run start:dev",
+        "start:attendance": "cd backend/apps/attendance-service && npm run start:dev",
+        "migrate": "cd backend/apps/user-service && npm run migration:run && cd ../attendance-service && npm run migration:run"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

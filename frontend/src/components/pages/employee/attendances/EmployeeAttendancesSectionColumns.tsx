@@ -1,5 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { AttendanceType } from "@/lib/types/attendance";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 export function EmployeeAttendancesSectionColumns({ isAdmin = false }: { isAdmin?: boolean }): ColumnDef<AttendanceType>[] {
     return [
@@ -68,12 +69,27 @@ export function EmployeeAttendancesSectionColumns({ isAdmin = false }: { isAdmin
         {
             accessorKey: "image",
             header: "Photo Proof",
-            cell: ({ row }) =>
-                row.original.image ? (
-                    <img src={`${row.original.image}?token=${localStorage.getItem("access_token")}`} alt={`${row.original.clockIn} ${row?.original?.employee?.name ? row?.original?.employee?.name : ''}`} className="max-w-20 w-full h-fit" />
+            cell: ({ row }) => {
+                const imageUrl = row.original.image ? `${row.original.image}?token=${localStorage.getItem("access_token")}` : null;
+                const altText = `${row.original.clockIn} ${row?.original?.employee?.name ? row?.original?.employee?.name : ''}`;
+
+                return imageUrl ? (
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <img
+                                src={imageUrl}
+                                alt={altText}
+                                className="max-w-20 w-full h-fit cursor-pointer hover:opacity-80 transition-opacity rounded-sm object-cover"
+                            />
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl flex justify-center bg-transparent border-none shadow-none outline-none">
+                            <img src={imageUrl} alt={altText} className="max-h-[85vh] w-auto object-contain rounded-md" />
+                        </DialogContent>
+                    </Dialog>
                 ) : (
                     <span className="text-muted-foreground italic">—</span>
-                ),
+                );
+            }
         }
     ];
 }
