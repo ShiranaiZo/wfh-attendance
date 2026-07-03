@@ -164,7 +164,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"name\": \"Rudi Tabuti Updated\",\n    \"position\": \"BACKEND_DEVELOPER\"\n}",
+                                    "raw": "{\n    \"name\": \"Rudi Tabuti Updated\",\n    \"position\": \"Backend Developer\"\n}",
                                     "options": {
                                         "raw": {
                                             "language": "json"
