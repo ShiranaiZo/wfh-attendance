@@ -64,7 +64,7 @@ export class EmployeesService implements OnModuleInit {
             where: { role: UserRoles.EMPLOYEE },
             order: { createdAt: 'DESC' },
         });
-        return successResponse('Employees', 'Successfully retrieved all employees', { employees: employees });
+        return successResponse('Employees', 'Successfully retrieved all employees', employees);
     }
 
     async findOne(id: string): Promise<ApiResponse> {
@@ -76,7 +76,7 @@ export class EmployeesService implements OnModuleInit {
             return errorResponse('Employees', 'Employee not found');
         }
 
-        return successResponse('Employees', 'Successfully retrieved employee', { employee: employee });
+        return successResponse('Employees', 'Successfully retrieved employee', employee);
     }
 
     async create(data: CreateEmployeeDto): Promise<ApiResponse> {

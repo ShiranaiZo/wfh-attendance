@@ -40,8 +40,8 @@ export class AppService {
                 this.userClient.send<any>({ cmd: EMPLOYEES_PATTERN.FIND_ALL }, {})
             );
 
-            if (res && res.success && Array.isArray(res.data?.employees)) {
-                employees = res.data.employees;
+            if (res && res.success && Array.isArray(res?.data)) {
+                employees = res?.data;
             }
         } catch (err: any) {
             console.error('[Attendance Service] Failed to fetch employees data:', err.message);
@@ -54,7 +54,7 @@ export class AppService {
             employee: employeeMap.get(attendance.userId),
         }));
 
-        return successResponse('Attendances', 'Successfully retrieved all employees attendances', { attendances: result });
+        return successResponse('Attendances', 'Successfully retrieved all employees attendances', result);
     }
 
 
@@ -65,7 +65,7 @@ export class AppService {
             order: { clockIn: 'DESC' },
         });
 
-        return successResponse('Attendances', 'Successfully retrieved user attendances', { attendances: attendances });
+        return successResponse('Attendances', 'Successfully retrieved user attendances', attendances);
     }
 
     async clockIn(data: CreateAttendanceDto): Promise<ApiResponse> {
@@ -76,7 +76,7 @@ export class AppService {
         attendance.notes = data.notes;
 
         const saved = await this.attendanceRepository.save(attendance);
-        return successResponse('Attendances', 'Successfully clocked in', { attendance: saved });
+        return successResponse('Attendances', 'Successfully clocked in', saved);
     }
 
     async findImageByFilename(filename: string): Promise<ApiResponse> {
@@ -86,6 +86,6 @@ export class AppService {
             },
         });
 
-        return successResponse('Attendances', 'Successfully retrieved attendance by image', { attendance });
+        return successResponse('Attendances', 'Successfully retrieved attendance by image', attendance);
     }
 }

@@ -252,8 +252,8 @@
                                     "script": {
                                         "exec": [
                                             "const response = pm.response.json();",
-                                            "if (response && response.success && response.data && response.data.attendance) {",
-                                            "    const imageUrl = response.data.attendance.image;",
+                                            "if (response && response.success && response?.data ) {",
+                                            "    const imageUrl = response?.data?.image;",
                                             "    const parts = imageUrl.split('/');",
                                             "    const filename = parts[parts.length - 1];",
                                             "    pm.collectionVariables.set(\"attendance_filename\", filename);",

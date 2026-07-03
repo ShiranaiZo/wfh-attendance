@@ -7,7 +7,7 @@ export async function apiGetAttendances(date?: string): Promise<AttendanceType[]
     if (!res.data?.success) {
         throw new Error(res.data?.message ?? "Failed to get attendances")
     }
-    return res.data?.data?.attendances ?? []
+    return res.data?.data ?? []
 }
 
 export async function apiClockIn(image: File, notes: string): Promise<void> {

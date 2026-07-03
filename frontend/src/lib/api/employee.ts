@@ -6,7 +6,7 @@ export async function apiGetEmployees(): Promise<EmployeeType[]> {
     if (!res.data?.success) {
         throw new Error(res.data?.message ?? "Failed to get employees")
     }
-    return res.data?.data?.employees ?? []
+    return res.data?.data ?? []
 }
 
 export async function apiGetEmployee(id: string): Promise<EmployeeType> {
@@ -16,7 +16,7 @@ export async function apiGetEmployee(id: string): Promise<EmployeeType> {
         throw new Error(res.data?.message ?? "Failed to get employee")
     }
 
-    return res.data?.data?.employee
+    return res.data?.data
 }
 
 export async function apiCreateEmployee(data: CreateEmployeePayloadType): Promise<void> {

@@ -23,10 +23,10 @@ interface Props {
 }
 
 interface FormErrors {
-    name?: boolean;
-    email?: boolean;
-    password?: boolean;
-    position?: boolean;
+    name?: string;
+    email?: string;
+    password?: string;
+    position?: string;
 }
 
 const POSITION_OPTIONS = Object.entries(Positions).map(([, value]) => value);
@@ -47,9 +47,9 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
         e.preventDefault();
 
         const newErrors: FormErrors = {};
-        if (!name.trim()) newErrors.name = true;
-        if (!isEdit && !email.trim()) newErrors.email = true;
-        if (!isEdit && !password.trim()) newErrors.password = true;
+        if (!name.trim()) newErrors.name = "Name is required";
+        if (!isEdit && !email.trim()) newErrors.email = "Email is required";
+        if (!isEdit && !password.trim()) newErrors.password = "Password is required";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -93,14 +93,16 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
             const data = error?.response?.data;
             const msg = data?.message || error?.message || "Something went wrong. Please try again.";
 
-            // Map backend field-level errors to form state
             if (data?.errors && typeof data.errors === "object") {
                 const fieldErrors: FormErrors = {};
-                if (data.errors.name?.length) fieldErrors.name = true;
-                if (data.errors.email?.length) fieldErrors.email = true;
-                if (data.errors.password?.length) fieldErrors.password = true;
-                if (data.errors.position?.length) fieldErrors.position = true;
+                if (data.errors.name?.length) fieldErrors.name = data.errors.name[0];
+                if (data.errors.email?.length) fieldErrors.email = data.errors.email[0];
+                if (data.errors.password?.length) fieldErrors.password = data.errors.password[0];
+                if (data.errors.position?.length) fieldErrors.position = data.errors.position[0];
+
                 setErrors(fieldErrors);
+
+                console.log(fieldErrors, "ini field eror yang kedua")
             }
 
             toast.error(msg, { id: toastId });
@@ -108,7 +110,6 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
             setIsLoading(false);
         }
     };
-
 
 
     return (
@@ -134,7 +135,7 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
 
                 <div className="px-6 pt-6 pb-8 flex flex-col gap-6">
                     <FieldGroup className="grid grid-cols-2">
-                        <Field data-invalid={errors.name || undefined}>
+                        <Field data-invalid={errors?.name || undefined}>
                             <FieldLabel htmlFor="name">
                                 Full Name
                             </FieldLabel>
@@ -146,16 +147,16 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
                                 value={name}
                                 onChange={(e) => {
                                     setName(e.target.value);
-                                    if (errors.name) setErrors({ ...errors, name: false });
+                                    if (errors?.name) setErrors({ ...errors, name: "" })
                                 }}
-                                aria-invalid={errors.name}
+                                aria-invalid={!!errors?.name}
                                 disabled={isLoading}
                                 required
                             />
-                            {errors.name && <FieldError>Full name is required.</FieldError>}
+                            {errors?.name && <FieldError>{errors.name}</FieldError>}
                         </Field>
 
-                        <Field data-invalid={errors.position || undefined}>
+                        <Field data-invalid={errors?.position || undefined}>
                             <FieldLabel htmlFor="position">Position</FieldLabel>
 
                             <Select
@@ -179,9 +180,10 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {errors?.position && <FieldError>{errors.position}</FieldError>}
                         </Field>
 
-                        <Field data-invalid={errors.email || undefined}>
+                        <Field data-invalid={errors?.email || undefined}>
                             <FieldLabel htmlFor="email">
                                 Email
                             </FieldLabel>
@@ -193,16 +195,16 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
                                 value={email}
                                 onChange={(e) => {
                                     setEmail(e.target.value);
-                                    if (errors.email) setErrors({ ...errors, email: false });
+                                    if (errors?.email) setErrors({ ...errors, email: "" });
                                 }}
-                                aria-invalid={errors.email}
+                                aria-invalid={!!errors?.email}
                                 disabled={isLoading || isEdit}
                                 required
                             />
-                            {errors.email && <FieldError>Email is required.</FieldError>}
+                            {errors?.email && <FieldError>{errors.email}</FieldError>}
                         </Field>
 
-                        <Field data-invalid={errors.password || undefined}>
+                        <Field data-invalid={errors?.password || undefined}>
                             <FieldLabel htmlFor="password">
                                 Password
                             </FieldLabel>
@@ -214,13 +216,13 @@ export function AdminEmployeesSectionForm({ mode, employee }: Props) {
                                 value={password}
                                 onChange={(e) => {
                                     setPassword(e.target.value);
-                                    if (errors.password) setErrors({ ...errors, password: false });
+                                    if (errors?.password) setErrors({ ...errors, password: "" });
                                 }}
-                                aria-invalid={errors.password}
+                                aria-invalid={!!errors?.password}
                                 disabled={isLoading}
                                 required={!isEdit}
                             />
-                            {errors.password && <FieldError>Password is required (min. 8 characters).</FieldError>}
+                            {errors?.password && <FieldError>{errors.password}</FieldError>}
                         </Field>
                     </FieldGroup>
 

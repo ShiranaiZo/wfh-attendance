@@ -110,11 +110,12 @@ export class AttendancesController {
             )
         );
 
-        if (!result || !result.success || !result.data?.attendance) {
+
+        if (!result || !result?.success || !result?.data) {
             throw new HttpException('Image not found', HttpStatus.NOT_FOUND);
         }
 
-        const attendance = result.data.attendance;
+        const attendance = result.data;
         if (req.user.role !== UserRoles.HRD && req.user.id !== attendance.userId) {
             throw new HttpException('You are not authorized to view this image', HttpStatus.FORBIDDEN);
         }
