@@ -4,8 +4,9 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
-import { ApiResponse, errorResponse, successResponse } from '@app/contracts/helpers/response.helper';
+import { errorResponse, successResponse } from '@app/contracts/helpers/response.helper';
 import { AuthPayloadDto } from '@app/contracts/auth/dto/auth-payload.dto';
+import { ApiResponse } from '@app/contracts/api/dto/api.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,17 +20,17 @@ export class AuthService {
         const user = await this.findOneByEmail(email);
 
         if (!user) {
-            return errorResponse("Login", "Invalid credentials");
+            return errorResponse({ title: "Login", message: "Invalid credentials" });
 
         }
 
         const isMatch = await bcrypt.compare(pass, user.password);
         if (!isMatch) {
-            return errorResponse("Login", "Invalid credentials");
+            return errorResponse({ title: "Login", message: "Invalid credentials" });
         }
 
         const payload: AuthPayloadDto = { id: user.id, email: user.email, role: user.role };
-        return successResponse("Login", "Successfully logged in", undefined, this.jwtService.sign(payload));
+        return successResponse({ title: "Login", message: "Successfully logged in", access_token: this.jwtService.sign(payload) });
     }
 
     async findOneByEmail(email: string): Promise<User | null> {

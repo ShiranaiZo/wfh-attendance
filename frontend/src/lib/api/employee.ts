@@ -1,12 +1,21 @@
 import { api } from "./api"
-import type { CreateEmployeePayloadType, EmployeeType, UpdateEmployeePayloadType } from "../types/employee"
+import type { EmployeeType, CreateEmployeePayloadType, UpdateEmployeePayloadType } from "../types/employee"
+import type { MetadataType } from "../types/apiType"
 
-export async function apiGetEmployees(): Promise<EmployeeType[]> {
-    const res = await api.get("/employees")
+
+export async function apiGetEmployees(page?: number, perPage?: number): Promise<{ data: EmployeeType[], metadata: MetadataType }> {
+    const params: Record<string, any> = {}
+    if (page !== undefined) params.page = page
+    if (perPage !== undefined) params.perPage = perPage
+
+    const res = await api.get("/employees", { params })
     if (!res.data?.success) {
         throw new Error(res.data?.message ?? "Failed to get employees")
     }
-    return res.data?.data ?? []
+    return {
+        data: res.data?.data ?? [],
+        metadata: res.data?.metadata ?? null,
+    }
 }
 
 export async function apiGetEmployee(id: string): Promise<EmployeeType> {

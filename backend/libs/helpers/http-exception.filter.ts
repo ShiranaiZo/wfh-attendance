@@ -13,7 +13,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
                 : HttpStatus.INTERNAL_SERVER_ERROR;
 
         let message = 'Internal server error';
-        
+
         const friendlyStatus = HttpStatus[status]
             ? HttpStatus[status]
                 .replace(/_/g, ' ')
@@ -56,7 +56,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
             title = 'Validation Error';
         }
 
-        const formattedResponse = errorResponse(title, message, errors, status);
+        const formattedResponse = errorResponse({ title, message, errors, statusCode: status });
         response.status(status).json(formattedResponse);
     }
 }
@@ -67,11 +67,11 @@ export function validationExceptionFactory(validationErrors: ValidationError[] =
         errors[error.property] = Object.values(error.constraints || {});
     });
 
-    const formattedError = errorResponse(
-        'Validation Error',
-        'Validation failed',
-        errors,
-    );
+    const formattedError = errorResponse({
+        title: 'Validation Error',
+        message: 'Validation failed',
+        errors
+    });
 
     return new BadRequestException(formattedError);
 }

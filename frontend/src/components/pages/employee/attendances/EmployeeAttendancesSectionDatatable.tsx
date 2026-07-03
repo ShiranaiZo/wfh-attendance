@@ -3,10 +3,10 @@ import type { ColumnDef } from "@tanstack/react-table"
 import {
     flexRender,
     getCoreRowModel,
-    getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table"
 import { format, isValid } from "date-fns"
+import type { MetadataType } from "@/lib/types/apiType"
 
 import {
     Table,
@@ -38,6 +38,11 @@ interface DataTableProps<TData, TValue> {
     isAdmin?: boolean
     selectedDate?: Date
     onDateChange?: (date: Date) => void
+    metadata?: MetadataType | null
+    page?: number
+    perPage?: number
+    onPageChange?: (page: number) => void
+    onPerPageChange?: (perPage: number) => void
 }
 
 
@@ -48,8 +53,12 @@ export function EmployeeAttendancesSectionDatatable<TData, TValue>({
     isAdmin = false,
     selectedDate,
     onDateChange = () => { },
+    metadata,
+    page = 1,
+    perPage = 10,
+    onPageChange = () => { },
+    onPerPageChange = () => { },
 }: DataTableProps<TData, TValue>) {
-    const [pageSize, setPageSize] = useState(10)
     const [calendarOpen, setCalendarOpen] = useState(false)
 
     const today = useMemo(() => {
@@ -64,21 +73,13 @@ export function EmployeeAttendancesSectionDatatable<TData, TValue>({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        initialState: {
-            pagination: { pageSize: 10 },
-        },
+        manualPagination: true,
     })
 
-    const handlePageSizeChange = (value: string) => {
-        const size = Number(value)
-        setPageSize(size)
-        table.setPageSize(size)
-    }
-
-    const { pageIndex } = table.getState().pagination
-    const pageCount = table.getPageCount()
-    const totalRows = table.getFilteredRowModel().rows.length
+    const pageCount = metadata?.pageCount ?? 1
+    const totalCount = metadata?.totalCount ?? data.length
+    const startEntry = totalCount === 0 ? 0 : (page - 1) * perPage + 1
+    const endEntry = Math.min(page * perPage, totalCount)
 
     return (
         <div className="flex flex-col gap-4 w-full">
@@ -86,7 +87,10 @@ export function EmployeeAttendancesSectionDatatable<TData, TValue>({
                 <div className="flex items-center gap-2 text-sm shrink-0">
                     <span>Show</span>
 
-                    <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                    <Select
+                        value={String(perPage)}
+                        onValueChange={(v) => onPerPageChange(Number(v))}
+                    >
                         <SelectTrigger id="attendance-page-size" className="w-20 h-8 text-sm">
                             <SelectValue />
                         </SelectTrigger>
@@ -184,39 +188,39 @@ export function EmployeeAttendancesSectionDatatable<TData, TValue>({
 
             <div className="flex items-center justify-between flex-wrap gap-3 text-sm text-muted-foreground">
                 <span>
-                    Showing {totalRows === 0 ? 0 : pageIndex * pageSize + 1}–{Math.min((pageIndex + 1) * pageSize, totalRows)} of {totalRows} entries
+                    Showing {startEntry}–{endEntry} of {totalCount} entries
                 </span>
 
                 <div className="flex items-center gap-1">
                     <Button
-                        id="employee-prev-page"
+                        id="attendance-prev-page"
                         variant="outline"
                         size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
+                        onClick={() => onPageChange(page - 1)}
+                        disabled={page <= 1}
                         className="h-8 w-8 p-0"
                     >
                         <ChevronLeft className="size-4" />
                     </Button>
 
-                    {Array.from({ length: pageCount }, (_, i) => (
+                    {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
                         <Button
-                            key={i}
-                            variant={pageIndex === i ? "default" : "outline"}
+                            key={p}
+                            variant={page === p ? "default" : "outline"}
                             size="sm"
-                            onClick={() => table.setPageIndex(i)}
+                            onClick={() => onPageChange(p)}
                             className="h-8 w-8 p-0 text-xs"
                         >
-                            {i + 1}
+                            {p}
                         </Button>
                     ))}
 
                     <Button
-                        id="employee-next-page"
+                        id="attendance-next-page"
                         variant="outline"
                         size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        onClick={() => onPageChange(page + 1)}
+                        disabled={page >= pageCount}
                         className="h-8 w-8 p-0"
                     >
                         <ChevronRight className="size-4" />

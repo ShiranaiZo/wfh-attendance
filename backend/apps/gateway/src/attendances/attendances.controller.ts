@@ -27,6 +27,7 @@ import { ParentCreateAttendanceDto } from '@app/contracts/attendances/dto/parent
 import { UserRoles } from '@app/contracts/helpers/user-roles.helper';
 import { Roles } from '@app/contracts/decorators/roles.decorator';
 import { RolesGuard } from '@app/contracts/guards/roles.guard';
+import { MetadataRequest } from '@app/contracts/api/dto/api.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('attendances')
@@ -82,11 +83,22 @@ export class AttendancesController {
     }
 
     @Get()
-    async findAll(@Request() req: { user: AuthPayloadDto }, @Query('date') date?: string) {
+    async findAll(
+        @Request() req: { user: AuthPayloadDto },
+        @Query() query: { date?: string; page?: number; perPage?: number }
+    ) {
         const res = await lastValueFrom(
             this.attendanceClient.send(
                 { cmd: ATTENDANCES_PATTERN.FIND_ALL },
-                { date, userId: req.user.id, role: req.user.role }
+                {
+                    date: query.date,
+                    userId: req.user.id,
+                    role: req.user.role,
+                    metadataRequest: {
+                        page: query.page,
+                        perPage: query.perPage,
+                    },
+                }
             )
         );
 

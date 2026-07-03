@@ -14,7 +14,7 @@ export default function EmployeeAttendancesPage() {
         setError(null);
 
         apiGetAttendances()
-            .then(setData)
+            .then(({ data }) => setData(data))
             .catch(() => setError("Failed to load attendances. Please try again."))
             .finally(() => setIsLoading(false));
     }, []);

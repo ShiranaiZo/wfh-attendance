@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
             : (request.query?.token as string || '');
 
         if (!token) {
-            const res = errorResponse('Unauthorized', 'Please log in first');
+            const res = errorResponse({ title: 'Unauthorized', message: 'Please log in first' });
             throw new HttpException(res, HttpStatus.UNAUTHORIZED);
         }
 
@@ -27,14 +27,14 @@ export class AuthGuard implements CanActivate {
             );
 
             if (!user) {
-                const res = errorResponse('Unauthorized', 'Session expired, please log in again');
+                const res = errorResponse({ title: 'Unauthorized', message: 'Session expired, please log in again' });
                 throw new HttpException(res, HttpStatus.UNAUTHORIZED);
             }
 
             request.user = user;
             return true;
         } catch (err) {
-            const res = errorResponse('Unauthorized', 'Authentication failed');
+            const res = errorResponse({ title: 'Unauthorized', message: 'Authentication failed' });
             throw new HttpException(res, HttpStatus.UNAUTHORIZED);
         }
     }

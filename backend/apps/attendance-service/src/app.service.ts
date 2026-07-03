@@ -7,9 +7,10 @@ import { lastValueFrom } from 'rxjs';
 import { EMPLOYEES_PATTERN } from '@app/contracts/employees/employees.pattern';
 import { EmployeeDto } from '@app/contracts/employees/dto/employee.dto';
 import { AttendanceDto } from '@app/contracts/attendances/dto/attendance.dto';
-import { ApiResponse, successResponse } from '@app/contracts/helpers/response.helper';
+import { successResponse } from '@app/contracts/helpers/response.helper';
 import { CreateAttendanceDto } from '@app/contracts/attendances/dto/create-attendance.dto';
 import { plainToInstance } from 'class-transformer';
+import { ApiResponse, Metadata, MetadataRequest } from '@app/contracts/api/dto/api.dto';
 
 
 @Injectable()
@@ -21,8 +22,11 @@ export class AppService {
         private readonly userClient: ClientProxy,
     ) { }
 
-    async findAll(date?: string): Promise<ApiResponse> {
-        const attendances = await this.attendanceRepository.find({
+    async findAll(date?: string, metadataRequest?: MetadataRequest): Promise<ApiResponse> {
+        const page = metadataRequest?.page ?? 1;
+        const perPage = metadataRequest?.perPage ?? 10;
+
+        const [attendances, totalCount] = await this.attendanceRepository.findAndCount({
             where: date
                 ? {
                     clockIn: Between(
@@ -31,8 +35,24 @@ export class AppService {
                     ),
                 }
                 : undefined,
-            order: { clockIn: 'DESC' }
+            order: { clockIn: 'DESC' },
+            skip: (page - 1) * perPage,
+            take: perPage,
         });
+
+        const pageCount = Math.ceil(totalCount / perPage);
+
+        const metadata: Metadata = {
+            page,
+            perPage,
+            pageCount,
+            totalCount,
+            links: {
+                next: page < pageCount ? `?page=${page + 1}&perPage=${perPage}` : null,
+                previous: page > 1 ? `?page=${page - 1}&perPage=${perPage}` : null,
+            },
+        };
+
 
         let employees: EmployeeDto[] = [];
         try {
@@ -54,10 +74,8 @@ export class AppService {
             employee: employeeMap.get(attendance.userId),
         }));
 
-        return successResponse('Attendances', 'Successfully retrieved all employees attendances', result);
+        return successResponse({ title: 'Attendances', message: 'Successfully retrieved all employees attendances', data: result, metadata });
     }
-
-
 
     async findAllByEmployee(userId: string): Promise<ApiResponse> {
         const attendances = await this.attendanceRepository.find({
@@ -65,7 +83,7 @@ export class AppService {
             order: { clockIn: 'DESC' },
         });
 
-        return successResponse('Attendances', 'Successfully retrieved user attendances', attendances);
+        return successResponse({ title: 'Attendances', message: 'Successfully retrieved user attendances', data: attendances });
     }
 
     async clockIn(data: CreateAttendanceDto): Promise<ApiResponse> {
@@ -76,7 +94,7 @@ export class AppService {
         attendance.notes = data.notes;
 
         const saved = await this.attendanceRepository.save(attendance);
-        return successResponse('Attendances', 'Successfully clocked in', saved);
+        return successResponse({ title: 'Attendances', message: 'Successfully clocked in', data: saved });
     }
 
     async findImageByFilename(filename: string): Promise<ApiResponse> {
@@ -86,6 +104,6 @@ export class AppService {
             },
         });
 
-        return successResponse('Attendances', 'Successfully retrieved attendance by image', attendance);
+        return successResponse({ title: 'Attendances', message: 'Successfully retrieved attendance by image', data: attendance });
     }
 }

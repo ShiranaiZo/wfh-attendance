@@ -4,14 +4,15 @@ import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from '@app/contracts/employees/dto/create-employee.dto';
 import { UpdateEmployeeDto } from '@app/contracts/employees/dto/update-employee.dto';
 import { EMPLOYEES_PATTERN } from '@app/contracts/employees/employees.pattern';
+import { MetadataRequest } from '@app/contracts/api/dto/api.dto';
 
 @Controller()
 export class EmployeesController {
     constructor(private readonly employeesService: EmployeesService) { }
 
     @MessagePattern({ cmd: EMPLOYEES_PATTERN.FIND_ALL })
-    async findAll() {
-        return this.employeesService.findAll();
+    async findAll(@Payload() data: { metadataRequest: MetadataRequest }) {
+        return this.employeesService.findAll(data.metadataRequest);
     }
 
     @MessagePattern({ cmd: EMPLOYEES_PATTERN.FIND_ONE })

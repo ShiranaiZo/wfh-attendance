@@ -1,13 +1,21 @@
 import { api } from "./api"
 import type { AttendanceType } from "../types/attendance"
+import type { MetadataType } from "../types/apiType"
 
-export async function apiGetAttendances(date?: string): Promise<AttendanceType[]> {
-    const params = date ? { date } : {}
+export async function apiGetAttendances(date?: string, page?: number, perPage?: number): Promise<{ data: AttendanceType[], metadata: MetadataType }> {
+    const params: Record<string, any> = {}
+    if (date) params.date = date
+    if (page !== undefined) params.page = page
+    if (perPage !== undefined) params.perPage = perPage
+
     const res = await api.get("/attendances", { params })
     if (!res.data?.success) {
         throw new Error(res.data?.message ?? "Failed to get attendances")
     }
-    return res.data?.data ?? []
+    return {
+        data: res.data?.data ?? [],
+        metadata: res.data?.metadata ?? null,
+    }
 }
 
 export async function apiClockIn(image: File, notes: string): Promise<void> {

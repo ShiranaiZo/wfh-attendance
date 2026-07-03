@@ -11,7 +11,8 @@ import { UpdateEmployeeDto } from '@app/contracts/employees/dto/update-employee.
 import { EmployeeDto } from '@app/contracts/employees/dto/employee.dto';
 import { validate } from 'class-validator';
 import { AuthService } from '../auth/auth.service';
-import { ApiResponse, successResponse, errorResponse } from '@app/contracts/helpers/response.helper';
+import { successResponse, errorResponse } from '@app/contracts/helpers/response.helper';
+import { ApiResponse, Metadata, MetadataRequest } from '@app/contracts/api/dto/api.dto';
 
 @Injectable()
 export class EmployeesService implements OnModuleInit {
@@ -59,12 +60,31 @@ export class EmployeesService implements OnModuleInit {
         }
     }
 
-    async findAll(): Promise<ApiResponse> {
-        const employees = await this.userRepository.find({
+    async findAll(metadataRequest: MetadataRequest): Promise<ApiResponse> {
+        const page = metadataRequest?.page ?? 1;
+        const perPage = metadataRequest?.perPage ?? 10;
+
+        const [employees, totalCount] = await this.userRepository.findAndCount({
             where: { role: UserRoles.EMPLOYEE },
             order: { createdAt: 'DESC' },
+            skip: (page - 1) * perPage,
+            take: perPage,
         });
-        return successResponse('Employees', 'Successfully retrieved all employees', employees);
+
+        const pageCount = Math.ceil(totalCount / perPage);
+
+        const metadata: Metadata = {
+            page,
+            perPage,
+            pageCount,
+            totalCount,
+            links: {
+                next: page < pageCount ? `?page=${page + 1}&perPage=${perPage}` : null,
+                previous: page > 1 ? `?page=${page - 1}&perPage=${perPage}` : null,
+            },
+        };
+
+        return successResponse({ title: 'Employees', message: 'Successfully retrieved all employees', data: employees, metadata });
     }
 
     async findOne(id: string): Promise<ApiResponse> {
@@ -73,26 +93,26 @@ export class EmployeesService implements OnModuleInit {
         });
 
         if (!employee) {
-            return errorResponse('Employees', 'Employee not found');
+            return errorResponse({ title: 'Employees', message: 'Employee not found' });
         }
 
-        return successResponse('Employees', 'Successfully retrieved employee', employee);
+        return successResponse({ title: 'Employees', message: 'Successfully retrieved employee', data: employee });
     }
 
     async create(data: CreateEmployeeDto): Promise<ApiResponse> {
         const dto = plainToInstance(CreateEmployeeDto, data);
         const errors = await validate(dto);
         if (errors.length > 0) {
-            return errorResponse(
-                'Employees',
-                'Validation failed',
-                errors.flatMap((e) => Object.values(e.constraints || {})),
-            );
+            return errorResponse({
+                title: 'Employees',
+                message: 'Validation failed',
+                errors: errors.flatMap((e) => Object.values(e.constraints || {})),
+            });
         }
 
         const checkEmail = await this.authService.findOneByEmail(dto.email);
         if (checkEmail) {
-            return errorResponse('Employees', 'Email is already in use', { email: ["Email is already in use"] });
+            return errorResponse({ title: 'Employees', message: 'Email is already in use', errors: { email: ["Email is already in use"] } });
         }
 
         const user = new User();
@@ -104,18 +124,18 @@ export class EmployeesService implements OnModuleInit {
 
         const saved = await this.userRepository.save(user);
         const { password: _, ...userData } = saved;
-        return successResponse('Employees', 'Successfully created employee', userData);
+        return successResponse({ title: 'Employees', message: 'Successfully created employee', data: userData });
     }
 
     async update(id: string, data: UpdateEmployeeDto): Promise<ApiResponse> {
         const dto = plainToInstance(UpdateEmployeeDto, data);
         const errors = await validate(dto);
         if (errors.length > 0) {
-            return errorResponse(
-                'Employees',
-                'Validation failed',
-                errors.flatMap((e) => Object.values(e.constraints || {})),
-            );
+            return errorResponse({
+                title: 'Employees',
+                message: 'Validation failed',
+                errors: errors.flatMap((e) => Object.values(e.constraints || {})),
+            });
         }
 
         const user = await this.userRepository.findOne({
@@ -123,7 +143,7 @@ export class EmployeesService implements OnModuleInit {
         });
 
         if (!user) {
-            return errorResponse('Employees', 'Employee not found');
+            return errorResponse({ title: 'Employees', message: 'Employee not found' });
         }
 
         user.name = dto.name;
@@ -134,7 +154,7 @@ export class EmployeesService implements OnModuleInit {
 
         const saved = await this.userRepository.save(user);
         const { password: _, ...userData } = saved;
-        return successResponse('Employees', 'Successfully updated employee', userData);
+        return successResponse({ title: 'Employees', message: 'Successfully updated employee', data: userData });
     }
 
     async delete(id: string): Promise<ApiResponse> {
@@ -143,10 +163,10 @@ export class EmployeesService implements OnModuleInit {
         });
 
         if (!user) {
-            return errorResponse('Employees', 'Employee not found');
+            return errorResponse({ title: 'Employees', message: 'Employee not found' });
         }
 
         await this.userRepository.remove(user);
-        return successResponse('Employees', 'Successfully deleted employee');
+        return successResponse({ title: 'Employees', message: 'Successfully deleted employee' });
     }
 }

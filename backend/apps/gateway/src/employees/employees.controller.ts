@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Inject, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Inject, HttpCode, HttpStatus, HttpException, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { UserRoles } from '@app/contracts/helpers/user-roles.helper';
@@ -8,6 +8,7 @@ import { RolesGuard } from '@app/contracts/guards/roles.guard';
 import { CreateEmployeeDto } from '@app/contracts/employees/dto/create-employee.dto';
 import { UpdateEmployeeDto } from '@app/contracts/employees/dto/update-employee.dto';
 import { EMPLOYEES_PATTERN } from '@app/contracts/employees/employees.pattern';
+import { MetadataRequest } from '@app/contracts/api/dto/api.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRoles.HRD)
@@ -16,8 +17,15 @@ export class EmployeesController {
     constructor(@Inject('USER_SERVICE') private readonly employeeClient: ClientProxy) { }
 
     @Get()
-    async findAll() {
-        const res = await lastValueFrom(this.employeeClient.send({ cmd: EMPLOYEES_PATTERN.FIND_ALL }, {}));
+    async findAll(@Query() query: { page?: number; perPage?: number }) {
+        const res = await lastValueFrom(
+            this.employeeClient.send({ cmd: EMPLOYEES_PATTERN.FIND_ALL }, {
+                metadataRequest: {
+                    page: query.page ? Number(query.page) : undefined,
+                    perPage: query.perPage ? Number(query.perPage) : undefined,
+                },
+            })
+        );
 
         if (!res || !res.success) {
             throw new HttpException(res, res.statusCode);

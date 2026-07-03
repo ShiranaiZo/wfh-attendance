@@ -4,24 +4,36 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmployeeAttendancesSectionColumns } from "./EmployeeAttendancesSectionColumns";
 import { EmployeeAttendancesSectionDatatable } from "./EmployeeAttendancesSectionDatatable";
 
+import type { MetadataType } from "@/lib/types/apiType";
+
 interface Props {
     data: AttendanceType[];
+    metadata?: MetadataType | null;
     isLoading: boolean;
     error: string | null;
     additionalClass?: string;
     isAdmin?: boolean;
     selectedDate?: Date;
     onDateChange?: (date: Date) => void;
+    page?: number;
+    perPage?: number;
+    onPageChange?: (page: number) => void;
+    onPerPageChange?: (perPage: number) => void;
 }
 
 export function EmployeeAttendancesSectionMain({
     data,
+    metadata,
     isLoading,
     error,
     additionalClass = "",
     isAdmin = false,
     selectedDate,
     onDateChange,
+    page,
+    perPage,
+    onPageChange,
+    onPerPageChange,
 }: Props) {
     const columns = useMemo(
         () => EmployeeAttendancesSectionColumns({ isAdmin }),
@@ -54,6 +66,11 @@ export function EmployeeAttendancesSectionMain({
                     isAdmin={isAdmin}
                     selectedDate={selectedDate}
                     onDateChange={onDateChange}
+                    metadata={metadata}
+                    page={page}
+                    perPage={perPage}
+                    onPageChange={onPageChange}
+                    onPerPageChange={onPerPageChange}
                 />
             )}
         </section>

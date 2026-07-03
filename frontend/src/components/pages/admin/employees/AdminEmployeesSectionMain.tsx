@@ -18,14 +18,21 @@ import { AppRoutes } from "@/lib/helpers/app-routes";
 import { UserPlus } from "lucide-react";
 import { AdminEmployeesSectionColumns } from "./AdminEmployeesSectionColumns";
 
+import type { MetadataType } from "@/lib/types/apiType";
+
 interface Props {
     data: EmployeeType[];
+    metadata: MetadataType | null;
     isLoading: boolean;
     error: string | null;
+    page: number;
+    perPage: number;
+    onPageChange: (page: number) => void;
+    onPerPageChange: (perPage: number) => void;
     onRefresh: () => void;
 }
 
-export function AdminEmployeesSectionMain({ data, isLoading, error, onRefresh }: Props) {
+export function AdminEmployeesSectionMain({ data, metadata, isLoading, error, page, perPage, onPageChange, onPerPageChange, onRefresh }: Props) {
     const navigate = useNavigate();
     const [deleteTarget, setDeleteTarget] = useState<EmployeeType | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -91,7 +98,15 @@ export function AdminEmployeesSectionMain({ data, isLoading, error, onRefresh }:
                     {error}
                 </div>
             ) : (
-                <AdminEmployeesSectionDatatable columns={columns} data={data} />
+                <AdminEmployeesSectionDatatable
+                    columns={columns}
+                    data={data}
+                    metadata={metadata}
+                    page={page}
+                    perPage={perPage}
+                    onPageChange={onPageChange}
+                    onPerPageChange={onPerPageChange}
+                />
             )}
 
             <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
