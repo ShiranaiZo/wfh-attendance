@@ -10,23 +10,31 @@ interface Props {
     error: string | null;
     additionalClass?: string;
     isAdmin?: boolean;
+    selectedDate?: Date;
+    onDateChange?: (date: Date) => void;
 }
 
-export function EmployeeAttendancesSectionMain({ data, isLoading, error, additionalClass = "", isAdmin = false }: Props) {
+export function EmployeeAttendancesSectionMain({
+    data,
+    isLoading,
+    error,
+    additionalClass = "",
+    isAdmin = false,
+    selectedDate,
+    onDateChange,
+}: Props) {
     const columns = useMemo(
         () => EmployeeAttendancesSectionColumns({ isAdmin }),
-        []
+        [isAdmin]
     );
 
     return (
         <section
-            id="admin-employees-section-main"
+            id="employee-attendances-section-main"
             className={`bg-white rounded-lg w-full h-fit py-8 px-6 flex flex-col gap-6 ${additionalClass}`}
         >
             <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-xl font-semibold text-foreground">Attendances</h2>
-                </div>
+                <h2 className="text-xl font-semibold text-foreground">Attendances</h2>
             </div>
 
             {isLoading ? (
@@ -40,7 +48,13 @@ export function EmployeeAttendancesSectionMain({ data, isLoading, error, additio
                     {error}
                 </div>
             ) : (
-                <EmployeeAttendancesSectionDatatable columns={columns} data={data} />
+                <EmployeeAttendancesSectionDatatable
+                    columns={columns}
+                    data={data}
+                    isAdmin={isAdmin}
+                    selectedDate={selectedDate}
+                    onDateChange={onDateChange}
+                />
             )}
         </section>
     );

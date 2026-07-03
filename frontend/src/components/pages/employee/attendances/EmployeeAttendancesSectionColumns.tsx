@@ -4,7 +4,7 @@ import type { AttendanceType } from "@/lib/types/attendance";
 export function EmployeeAttendancesSectionColumns({ isAdmin = false }: { isAdmin?: boolean }): ColumnDef<AttendanceType>[] {
     return [
         {
-            accessorKey: "clockin",
+            accessorKey: "date",
             header: "Date",
             cell: ({ row }) =>
                 row?.original?.clockIn ? (

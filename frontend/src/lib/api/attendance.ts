@@ -1,8 +1,9 @@
 import { api } from "./api"
 import type { AttendanceType } from "../types/attendance"
 
-export async function apiGetAttendances(): Promise<AttendanceType[]> {
-    const res = await api.get("/attendances")
+export async function apiGetAttendances(date?: string): Promise<AttendanceType[]> {
+    const params = date ? { date } : {}
+    const res = await api.get("/attendances", { params })
     if (!res.data?.success) {
         throw new Error(res.data?.message ?? "Failed to get attendances")
     }

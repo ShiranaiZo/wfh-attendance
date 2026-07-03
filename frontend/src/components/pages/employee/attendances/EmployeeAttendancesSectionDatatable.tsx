@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
     flexRender,
@@ -6,6 +6,7 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table"
+import { format, isValid } from "date-fns"
 
 import {
     Table,
@@ -23,28 +24,45 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    isAdmin?: boolean
+    selectedDate?: Date
+    onDateChange?: (date: Date) => void
 }
+
+
 
 export function EmployeeAttendancesSectionDatatable<TData, TValue>({
     columns,
     data,
+    isAdmin = false,
+    selectedDate,
+    onDateChange = () => { },
 }: DataTableProps<TData, TValue>) {
-    const [globalFilter, setGlobalFilter] = useState("")
     const [pageSize, setPageSize] = useState(10)
+    const [calendarOpen, setCalendarOpen] = useState(false)
+
+    const today = useMemo(() => {
+        const d = new Date()
+        d.setHours(0, 0, 0, 0)
+        return d
+    }, [])
+
+    const safeDate = selectedDate instanceof Date && isValid(selectedDate) ? selectedDate : today
 
     const table = useReactTable({
         data,
         columns,
-        globalFilterFn: "includesString",
-        state: {
-            globalFilter,
-        },
-        onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         initialState: {
@@ -69,7 +87,7 @@ export function EmployeeAttendancesSectionDatatable<TData, TValue>({
                     <span>Show</span>
 
                     <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                        <SelectTrigger id="employee-page-size" className="w-20 h-8 text-sm">
+                        <SelectTrigger id="attendance-page-size" className="w-20 h-8 text-sm">
                             <SelectValue />
                         </SelectTrigger>
 
@@ -82,6 +100,39 @@ export function EmployeeAttendancesSectionDatatable<TData, TValue>({
 
                     <span>entries</span>
                 </div>
+
+                {
+                    isAdmin && (
+                        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    id="attendance-date-filter"
+                                    variant="outline"
+                                    className="h-8 text-sm font-normal gap-2"
+                                >
+                                    <CalendarIcon className="size-4 text-muted-foreground" />
+                                    {format(safeDate, "dd MMM yyyy")}
+                                </Button>
+                            </PopoverTrigger>
+
+                            <PopoverContent className="w-auto p-0" align="end">
+                                <Calendar
+                                    key={safeDate.toISOString()}
+                                    mode="single"
+                                    selected={safeDate}
+                                    onSelect={(date) => {
+                                        if (date) {
+                                            onDateChange(date)
+                                            setCalendarOpen(false)
+                                        }
+                                    }}
+                                    defaultMonth={safeDate}
+                                    disabled={{ after: today }}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    )
+                }
             </div>
 
             <div className="overflow-hidden rounded-md border">
