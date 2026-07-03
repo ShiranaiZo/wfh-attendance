@@ -8,6 +8,12 @@ This is a monolithic-like microservices repository for the WFH Attendance System
 - `backend/apps/user-service/` - NestJS User & Employee Microservice
 - `backend/apps/attendance-service/` - NestJS Attendance Microservice
 
+## Postman Collection
+You can access the API documentation and test the endpoints using Postman:
+- **Import via file**: Import the `wfh-attendance.postman_collection.json` file located in the root directory into your Postman.
+- **View online**: [Postman Documentation Link](https://documenter.getpostman.com/view/14227868/2sBY4HU4Xi)
+
+
 ## Prerequisites
 - Node.js (v18 or later recommended)
 - MySQL Database
