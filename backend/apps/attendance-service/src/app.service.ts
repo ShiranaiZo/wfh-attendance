@@ -7,10 +7,11 @@ import { lastValueFrom } from 'rxjs';
 import { EMPLOYEES_PATTERN } from '@app/contracts/employees/employees.pattern';
 import { EmployeeDto } from '@app/contracts/employees/dto/employee.dto';
 import { AttendanceDto } from '@app/contracts/attendances/dto/attendance.dto';
-import { successResponse } from '@app/contracts/helpers/response.helper';
+import { errorResponse, successResponse } from '@app/contracts/helpers/response.helper';
 import { CreateAttendanceDto } from '@app/contracts/attendances/dto/create-attendance.dto';
 import { plainToInstance } from 'class-transformer';
 import { ApiResponse, Metadata, MetadataRequest } from '@app/contracts/api/dto/api.dto';
+import { format } from 'date-fns';
 
 
 @Injectable()
@@ -87,6 +88,11 @@ export class AppService {
     }
 
     async clockIn(data: CreateAttendanceDto): Promise<ApiResponse> {
+        const checkAttendanceToday = await this.checkAttendanceToday(data.userId);
+        if (checkAttendanceToday) {
+            return errorResponse({ title: 'Attendance Exists', message: 'You already clocked in today' });
+        }
+
         const attendance = new Attendance();
         attendance.userId = data.userId;
         attendance.clockIn = new Date();
@@ -95,6 +101,22 @@ export class AppService {
 
         const saved = await this.attendanceRepository.save(attendance);
         return successResponse({ title: 'Attendances', message: 'Successfully clocked in', data: saved });
+    }
+
+    async checkAttendanceToday(id: string): Promise<AttendanceDto | null> {
+        const today = format(new Date(), 'yyyy-MM-dd');
+
+        const attendance = await this.attendanceRepository.findOne({
+            where: {
+                userId: id,
+                clockIn: Between(
+                    new Date(`${today}T00:00:00`),
+                    new Date(`${today}T23:59:59.999`),
+                ),
+            }
+        });
+
+        return attendance;
     }
 
     async findImageByFilename(filename: string): Promise<ApiResponse> {
